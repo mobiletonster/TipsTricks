@@ -1,4 +1,13 @@
+## .Net Engineering Forum 2018 December 20
+### C# Tips and Tricks
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/39gYjr1uo-0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+## Transcript
+
 C# is an elegant and powerful language. Today we are going to look at some cool tips and tricks in C# that you may want to use in your code.
+
 Let’s begin with a simple Person class.
 
     public class Person{
@@ -7,10 +16,14 @@ Let’s begin with a simple Person class.
         public string Name;
     }
 
+### C# Fields
+
 Name is a field, not a property. Let's create a new instance of `Person` and examine the `Name` field.
 
     var person = new Person();
     person.Name = "Wonder Man";
+
+### C# Properties
 
 This works as you would expect. Let's add a property.
 
@@ -66,6 +79,7 @@ Now we need to create a new instance and use the constructor overload with `gend
 
     Console.WriteLine(person.Gender);
 
+### C# Enumerations
 Using a type of string may be too loose for `Gender`. Let's use an enumeration instead. We'll create a new GenderType.cs file.
     
     public enum GenderType
@@ -94,6 +108,8 @@ Let's use explicit values for `GenderType` enumeration. This allows for expansio
 
 Notice when we output the value to the console, we get the friendly enumeration name rather than value unless we cast the value as an integer.
 
+### C# Full Properties with Backing Fields
+
 Let's use a backing field for a property called `Title`.
 
     private string _title;
@@ -121,9 +137,13 @@ And we will try it.
 
     Console.WriteLine(person.Title);
 
+### C# New Lambda Syntax in Properties
+
 Cool. We should add title to the `FullName` field. We can write it better using a 'fat arrow' syntax for readonly properties.
 
-        public string FullName => Title + " " + FirstName + " " + LastName;
+    public string FullName => Title + " " + FirstName + " " + LastName;
+
+### C# Default Values for Properties
 
 Let's create properties with default values.
 
@@ -153,6 +173,8 @@ Let's write to the console to see the values.
 
     Console.WriteLine(person.CreatedDate + " " + person.ModifiedDate);
 
+### C# Overrides
+
 Wouldn't it be nice if we could just use ToString() to get values out? Good news, ToString() is build into every object.
 
     Console.WriteLine(person.ToString());
@@ -175,6 +197,8 @@ Now call `ToString()` and see what happens.
 
     Console.WriteLine(person.ToString());
 
+### C# Expression Body Definition / String Interpolation
+
 Much better. To make it easier to read, maybe we should separate by commas instead. Lets create a `ToCommaString()` method instead. Lets use an Expression Body definition instead and use string interpolation because we are cool.
 
     public string ToCommaString() => $"{Title}, {FirstName}, {LastName}, {Gender}";
@@ -196,6 +220,8 @@ We are definitely cool. But, it is a pain to keep adding these fields over and o
     }   
 
     Console.WriteLine(person.ToCommaDelimited());
+
+### C# Obsolete Keyword
 
 When we run this, we get more key value pairs...nice. Let's let people know that the `ToCommaString()` isn't as cool and will probably be removed in the future.
 
@@ -222,24 +248,28 @@ Wow! We are super close to having a Json outputter. Let's add one.
 
 Ok, so Json is great for computers, but not great for humans. We'd rather have Line Feeds to break things up. Let's add one.
 
-        public string ToLF()
+    public string ToLF()
+    {
+        string output = string.Empty;
+        foreach (var pinfo in this.GetType().GetProperties())
         {
-            string output = string.Empty;
-            foreach (var pinfo in this.GetType().GetProperties())
-            {
-                output += $"{pinfo.Name}: {pinfo.GetValue(this)}\n";
-            }
-            return output;
+            output += $"{pinfo.Name}: {pinfo.GetValue(this)}\n";
         }
+        return output;
+    }
+
+### C# Ternary or Conditional Operator
 
 Ok. Let's add a `BirthDate` field and an `Age` calculation field. Can we use a Fat Arrow syntax for our property? Sure, let's also use a Ternary or Conditional Operator `?:`
 
-        public DateTime BirthDate { get; set; }
-        public int Age => (DateTime.UtcNow.DayOfYear >= BirthDate.DayOfYear)?(DateTime.UtcNow.Year - BirthDate.Year):(DateTime.UtcNow.Year-BirthDate.Year-1);
+    public DateTime BirthDate { get; set; }
+    public int Age => (DateTime.UtcNow.DayOfYear >= BirthDate.DayOfYear)?(DateTime.UtcNow.Year - BirthDate.Year):(DateTime.UtcNow.Year-BirthDate.Year-1);
 
 Age is a function of BirthDate and the current date...you age on or after your birthday of the year. If we choose a birthday ealier than today, versus after today, the age in years will be a difference of 1.
 
 Ok.  It isn't perfect. There are some scenarios that don't make sense, but for now, lets not worry about it.
+
+### C# More Enums
 
 Let's add a Social Media Type.
 
@@ -262,11 +292,17 @@ Let's add a Social Media Type.
 
 What happens if we don't assign a value? hmm... Do we want everyone to be Facebook by default? Probably not.
 
+### C# Nullable Value Operator (?)
+
 We can make this type optional, or nullable.
 
     public SocialMediaType? SocialMedia {get; set;}
 
-Now if we don't assign a value, we don't get a value. Notice also, that the values aren't necessarily mutually exclusive? We could break this into separate, mutually exclusive enums....but we want to demonstrate `Flags`. Flags need to be explicitly set to binary positional values like this:
+Now if we don't assign a value, we don't get a value. Notice also, that the values aren't necessarily mutually exclusive? We could break this into separate, mutually exclusive enums...
+
+### C# Enum Flags and Bitwise Operations
+
+...but we want to demonstrate `Flags`. Flags need to be explicitly set to binary positional values like this:
 
     [Flags]
     public enum SocialMediaType
@@ -299,6 +335,8 @@ We can perform checks like this:
 
     var hasInstagram = person.SocialMedia?.HasFlag(SocialMediaType.Instagram);
 
+### C# Null Conditional Operator (Elvis Operator)
+
 Notice the use of the `Null Conditional Operator` `?.`.
 
     if(hasInstagram.HasValue && hasInstagram.Value){
@@ -308,6 +346,8 @@ Notice the use of the `Null Conditional Operator` `?.`.
     if(hasInstagram.GetValueOrDefault()){
         Console.WriteLine("Person has Instagram!");
     }
+
+### C# Null Coalescing Operator
 
 or use the null coalescing operator `??`.
 
@@ -323,6 +363,8 @@ better yet, move that up a line:
         Console.WriteLine("Person has Instagram!");
     }
 
+### Console Color Options
+
 spice it up with some color:
 
     if (hasInstagram)
@@ -336,6 +378,8 @@ spice it up with some color:
 We can control the colors of the Console! Nice. Makes it easier to find what we are looking for. We can also reset it to default in one operation:
 
     Console.ResetColor();
+
+### C# Bit Shift Operator with Flags    
 
 Setting flags to binary increments could get unwieldy and hard to remember. We can leverage a Bit Shift operator to make it easier .
 
@@ -369,6 +413,8 @@ Before we do the next block, let's move all our code into a static method called
         ...
     }
 
+### C# Show Full Stack Trace With Exceptions
+
 Ok. Let's look at exceptions. We want to cause an exception and see what happens to the stack trace.
 
     person.Title=null;
@@ -400,7 +446,7 @@ Now watch what happens when we remove the throw ex; line from our first try-catc
     
 We retain a complete stack trace!
 
-### IEnumerable magic
+### C# IEnumerable<T> magic
 
 Let's generate list of people. We will use the object initializer to initialize make it cleaner:
 
@@ -418,6 +464,8 @@ Let's generate list of people. We will use the object initializer to initialize 
 
         return persons;
     }
+
+### C# List<T>.ForEach LINQ Method
 
 Now let's create a test method we can call `TestPeople()`.
 
@@ -442,6 +490,8 @@ When we run this, it is a bit hard to read because we get all the field names. L
 
     people.ForEach(p => Console.WriteLine(p.ToCommaDelimited(includePropertyName:false)));
 
+### C# Named Parameter Option
+
 Notice we used the named parameter option rather than simply passing an arbitrary `false` value.
 
 Next, we want to create a method to extract only people that are older than 35 and have a Twitter account.
@@ -461,7 +511,11 @@ Next, we want to create a method to extract only people that are older than 35 a
         return temp;
     }
 
-This is a common pattern that we see. Create a temp list to put the filtered/matching set of persons. Then return that temp list. While this works, you could refactor this slightly to avoid creating a temporary variable leveraging the `yield` keyword.
+This is a common pattern that we see. Create a temp list to put the filtered/matching set of persons. Then return that temp list. 
+
+### C# IEnumerable<T> Yield Keyword
+
+While this works, you could refactor this slightly to avoid creating a temporary variable leveraging the `yield` keyword.
 
     public static IEnumerable<Person> GetOldTwitterPeople(IEnumerable<Person> persons)
     {
@@ -476,4 +530,9 @@ This is a common pattern that we see. Create a temp list to put the filtered/mat
     }
 
 Notice we change the return type to IEnumerable<Person> which allows us to use the `yield return p` statement.
+
+## Conclusion
+
+C# is an amazing, powerful language. We looked at a few tips and tricks that can help improve our code. We have barely scratched the surface. We hope to have more installments of tips and tricks in the future. In the mean time, happy coding!
+
 
